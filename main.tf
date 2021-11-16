@@ -14,9 +14,9 @@ provider "aws" {
 
 # Create VPC
 resource "aws_vpc" "test_vpc" {
-  cidr_block = "9.0.0.0/16"
+  cidr_block = "${var.cidr_vpc}"
   tags = {
-    Name = "aws-t-vpc-0001"
+    Name = "${var.provider_name}"
   }
 }
 
@@ -24,7 +24,7 @@ resource "aws_vpc" "test_vpc" {
 resource "aws_internet_gateway" "test_igw" {
   vpc_id = aws_vpc.test_vpc.id
   tags = {
-    Name = "aws-t-igw-0001"
+    Name = "${var.igw_name}"
   }
 }
 
@@ -33,27 +33,27 @@ resource "aws_route_table" "test_route_table" {
   vpc_id = aws_vpc.test_vpc.id
 
   route {
-      cidr_block = "0.0.0.0/0"
+      cidr_block = "${var.cidr_rt}"
       gateway_id = aws_internet_gateway.test_igw.id
     }
 
   route {
-      ipv6_cidr_block = "::/0"
+      ipv6_cidr_block = "${var.ipv6_cidr_rt}"
       gateway_id = aws_internet_gateway.test_igw.id
   }
 
   tags = {
-    Name = "aws-t-rt-0001"
+    Name = "${var.rt_name}"
   }
 }
 
 # Create Subnet
 resource "aws_subnet" "test_subnet" {
   vpc_id     =  aws_vpc.test_vpc.id
-  cidr_block = "9.0.1.0/24"
-  availability_zone = "us-east-2a"
+  cidr_block = "${var.cidr_subnet}"
+  availability_zone = "${var.subnet_az}"
   tags = {
-    Name = "aws-t-rt-0001"
+    Name = "${var.subnet_name}"
   }
 }
 
@@ -123,7 +123,7 @@ resource "aws_security_group" "test_sg" {
 
 
   tags = {
-    Name = "aws-t-sg-0001"
+    Name = "${var.sg_name}"
   }
 }
 
@@ -134,7 +134,7 @@ resource "aws_network_interface" "test_ni" {
   security_groups = [aws_security_group.test_sg.id]
 
   tags = {
-      Name = "aws-t-ni-0001"
+      Name = "${var.ni_name}"
   }
 }
 
@@ -146,7 +146,7 @@ resource "aws_eip" "test_eip" {
   depends_on                = [aws_internet_gateway.test_igw]
 
   tags = {
-      Name = "aws-t-eip-0001"
+      Name = "${var.eip_name}"
   }
 }
 
